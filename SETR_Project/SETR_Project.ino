@@ -1,28 +1,11 @@
 #include <Adafruit_SPITFT.h>
 #include <Adafruit_SPITFT_Macros.h>
 #include <gfxfont.h>
-
-/*********************************************************************
-This is an example sketch for our Monochrome Nokia 5110 LCD Displays
-
-  Pick one up today in the adafruit shop!
-  ------> http://www.adafruit.com/products/338
-
-These displays use SPI to communicate, 4 or 5 pins are required to
-interface
-
-Adafruit invests time and resources providing this open source code,
-please support Adafruit and open-source hardware by purchasing
-products from Adafruit!
-
-Written by Limor Fried/Ladyada  for Adafruit Industries.
-BSD license, check license.txt for more information
-All text above, and the splash screen must be included in any redistribution
-*********************************************************************/
-
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
+
+#include "game.h"
 
 // Software SPI (slower updates, more flexible pin options):
 // pin 7 - Serial clock out (SCLK)
@@ -88,6 +71,10 @@ void setup()   {
   display1.display();
   display2.display();
 
+  int e1 = teste();
+
+  
+
   /*for (int i=display2.width()/2; i <= display2.width()*2 + 10; i++) {
     //if (i == '\n') continue;
     if (i <= display1.width()+10){
@@ -107,77 +94,6 @@ void setup()   {
     display1.clearDisplay();
     display2.clearDisplay();
   } */ 
-
-  /*display1.setTextSize(1);
-  display1.setTextColor(BLACK);
-  display1.setCursor(0,0);
-  display1.println("Yo modafoka!");
-  display1.display();
-  delay(2000);
-  display1.println("Ate te desenhava um coracao, mas da muito trabalho");
-  display1.display();
-  delay(2000);
-  display1.clearDisplay();
-  display1.display();
-  delay(2000);
-  display1.println("Espera");
-  display1.display();
-  delay(2000);
-  display1.println("Tive uma ideia");
-  display1.display();
-  
-  delay(2000);
-  display1.clearDisplay();
-  display1.display();
-  delay(2000);
-  display1.println("3<");
-  display1.display();
-  delay(2000);
-  display1.clearDisplay();
-  display1.display();
-  delay(1000);
-  display1.println("Carago la para o arduino, nao faz nada de jeito");
-  display1.display();
-  delay(1000);
-  display2.clearDisplay();
-  display2.println("Nem sequer escreve acentos");
-  display2.display();
-  delay(2000);
-  display1.clearDisplay();
-  display2.clearDisplay();
-  display1.display();
-  display2.display();
-  delay(1000);
-  display1.println("Olha, mas tu tambem falas?");
-  display1.display();
-  delay(2000);
-  display2.clearDisplay();
-  display2.println("Hm");
-  display2.display();
-  delay(2000);
-  display2.setTextSize(2);
-  display1.clearDisplay();
-  display2.clearDisplay();
-  display1.display();
-  display2.display();
-  delay(2000);
-  display2.println("<3");
-  display2.display();
-  delay(2000);
-  display2.setTextSize(1);
-  display2.println("(I tried...)");
-  display2.display();
-   delay(2000);
-   display1.clearDisplay();
-  display1.println("Agora vou meter aqui uma bola a andar de um lado para o outro");
-  display1.display();
-  delay(3000);
-
-   display1.clearDisplay();
-  display2.clearDisplay();
-
-  display1.display();
-  display2.display();*/
 
   for (int i=display2.width()/2; i <= display2.width()*2 + 10; i++) {
     //if (i == '\n') continue;
