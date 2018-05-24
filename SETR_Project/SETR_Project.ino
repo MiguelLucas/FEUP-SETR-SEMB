@@ -1,20 +1,40 @@
+#include <Adafruit_ATParser.h>
+#include <Adafruit_BLE.h>
+#include <Adafruit_BLEBattery.h>
+#include <Adafruit_BLEEddystone.h>
+#include <Adafruit_BLEGatt.h>
+#include <Adafruit_BLEMIDI.h>
+#include <Adafruit_BluefruitLE_SPI.h>
+#include <Adafruit_BluefruitLE_UART.h>
+
 #include <Adafruit_SPITFT.h>
 #include <Adafruit_SPITFT_Macros.h>
 #include <gfxfont.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
+#include "Adafruit_BLE.h"
+
+#include <string.h>
+
+#include "BluefruitConfig.h"
+
+#if SOFTWARE_SERIAL_AVAILABLE
+  #include <SoftwareSerial.h>
+#endif
 
 #include "game.h"
 
 // Software SPI (slower updates, more flexible pin options):
-// pin 7 - Serial clock out (SCLK)
-// pin 6 - Serial data out (DIN)
-// pin 5 - Data/Command select (D/C)
-// pin 4 - LCD chip select (CS)
-// pin 3 - LCD reset (RST)
-Adafruit_PCD8544 display1 = Adafruit_PCD8544(3, 4, 5, 7, 6);
-Adafruit_PCD8544 display2 = Adafruit_PCD8544(9, 10, 11, 13, 12);
+//first - Serial clock out (SCLK) - 7
+//second - Serial data out (DIN) - 6
+//third - Data/Command select (D/C) - 5
+//fourth - LCD chip select (CS) - 3
+//fifth - LCD reset (RST) - 4
+//Adafruit_PCD8544 display1 = Adafruit_PCD8544(3, 0, 5, 2, 6);
+//Adafruit_PCD8544 display1 = Adafruit_PCD8544(9, 10, 11, 13, 12);
+Adafruit_PCD8544 display1 = Adafruit_PCD8544(3,2,1);
+//Game game;
 
 // Hardware SPI (faster, but must use certain hardware pins):
 // SCK is LCD serial clock (SCLK) - this is pin 13 on Arduino Uno
@@ -25,6 +45,29 @@ Adafruit_PCD8544 display2 = Adafruit_PCD8544(9, 10, 11, 13, 12);
 // Adafruit_PCD8544 display = Adafruit_PCD8544(5, 4, 3);
 // Note with hardware SPI MISO and SS pins aren't used but will still be read
 // and written to during SPI transfer.  Be careful sharing these pins!
+
+#define FACTORYRESET_ENABLE         0
+    #define MINIMUM_FIRMWARE_VERSION    "0.6.6"
+    #define MODE_LED_BEHAVIOUR          "MODE"
+
+//CS = 8
+//IRQ = 7
+//RST = 4
+Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
+// A small helper
+void error(const __FlashStringHelper*err) {
+  Serial.println(err);
+  while (1);
+}
+
+// function prototypes over in packetparser.cpp
+uint8_t readPacket(Adafruit_BLE *ble, uint16_t timeout);
+float parsefloat(uint8_t *buffer);
+void printHex(const uint8_t * data, const uint32_t numBytes);
+
+// the packet buffer
+extern uint8_t packetbuffer[];
+
 
 #define NUMFLAKES 10
 #define XPOS 0
@@ -55,66 +98,87 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
 
 void setup()   {
   Serial.begin(9600);
-
-  display1.begin();
-  display2.begin();
+  //game_map[1][1] = 'R';
+  
+//  game.player = "cenas";
+  //init_game_map();
   // init done
-
-  // you can change the contrast around to adapt the display
-  // for the best viewing!
-  display1.setContrast(50);
-  display2.setContrast(50);
-
-  display1.clearDisplay();
-  display2.clearDisplay();
-
-  display1.display();
-  display2.display();
-
-  int e1 = teste();
 
   
 
-  /*for (int i=display2.width()/2; i <= display2.width()*2 + 10; i++) {
+
+  display1.begin();
+  //display2.begin();
+  display1.setContrast(50);
+  //display2.setContrast(50);
+
+  display1.clearDisplay();
+  //display2.clearDisplay();
+  
+  Serial.println("Iniciar");
+  display1.println("Loading...");
+  
+
+  display1.display();
+  //display2.display();
+
+  delay(2000);
+  //display1.clearDisplay();
+  //display1.println("Waiting for bluetooth connection...");
+  //display1.display();
+  
+  //initBluetoothModule();
+  
+  delay(2000);
+  Serial.println("Bluetooth connected");
+  display1.begin();
+  display1.clearDisplay();
+  display1.println("Bluetooth connected!");
+  display1.display();
+  delay(2000);
+  // you can change the contrast around to adapt the display
+  // for the best viewing!
+  
+
+
+  //drawInitialTerrain();
+
+  /*for (int i=display2.width()/2; i <= display2.width()*2 + 10; i+=4) {
     //if (i == '\n') continue;
-    if (i <= display1.width()+10){
-        display1.fillCircle(i, display1.height()/2, 10, BLACK);
+    if (i <= display1.width()){
+        display1.fillCircle(i-4, display1.height()/2, 7, WHITE);
+        display1.fillCircle(i, display1.height()/2, 7, BLACK);
         display1.display();
     } 
 
-    if (i > display1.width()-10){
-      display2.clearDisplay();
-    }
-    
-    if (i >= display1.width()-10){
-        display2.fillCircle(i - display1.width(), display2.height()/2, 10, BLACK);
+    if (i >= display1.width()+10){
+        display2.fillCircle((i-4) - display1.width(), display2.height()/2, 7, WHITE);
+        display2.fillCircle(i - display1.width(), display2.height()/2, 7, BLACK);
+        //display1.fillCircle(i - display1.width(), display2.height()/2, 7, WHITE);
+        //display1.fillCircle(i-4 - display1.width(), display2.height()/2, 7, WHITE);
         display2.display();
     }
-    delay(50);
-    display1.clearDisplay();
-    display2.clearDisplay();
-  } */ 
-
-  for (int i=display2.width()/2; i <= display2.width()*2 + 10; i++) {
-    //if (i == '\n') continue;
-    if (i <= display1.width()+10){
-        display1.fillCircle(i, display1.height()/2, 10, BLACK);
-        display1.display();
-    } 
 
     if (i > display1.width()-10){
-      display2.clearDisplay();
+      display2.fillCircle(i - display1.width(), display2.height()/2, 7, WHITE);
+      display2.fillCircle(i-4 - display1.width(), display2.height()/2, 7, WHITE);
     }
-    
+
+    display1.display();
     if (i >= display1.width()-10){
-        display2.fillCircle(i - display1.width(), display2.height()/2, 10, BLACK);
+        display2.fillCircle((i-4) - display1.width(), display2.height()/2, 7, WHITE);
+        display2.fillCircle(i - display1.width(), display2.height()/2, 7, BLACK);
+        //display1.fillCircle(i - display1.width(), display2.height()/2, 7, WHITE);
+        //display1.fillCircle(i-4 - display1.width(), display2.height()/2, 7, WHITE);
         display2.display();
     }
-    delay(50);
-    display1.clearDisplay();
-    display2.clearDisplay();
+    delay(200);
   }
-  display1.setTextColor(WHITE, BLACK); // 'inverted' text
+   /* delay(200);
+    //display1.clearDisplay();
+    //display2.clearDisplay();
+  }*/
+  /*display1.setTextColor(WHITE, BLACK); // 'inverted' text
   display1.println(3.141592);
   display1.setTextSize(2);
   display1.setTextColor(BLACK);
@@ -123,7 +187,7 @@ void setup()   {
   delay(2000);
   /*display2.fillCircle(-10, display2.height()/2, 10, BLACK);
   display2.display();
-  delay(2000);*/
+  delay(2000);
 
   // draw a single pixel
   display1.drawPixel(10, 10, BLACK);
@@ -228,11 +292,115 @@ void setup()   {
   delay(1000); 
 
   // draw a bitmap icon and 'animate' movement
-  testdrawbitmap(logo16_glcd_bmp, LOGO16_GLCD_WIDTH, LOGO16_GLCD_HEIGHT);
+  testdrawbitmap(logo16_glcd_bmp, LOGO16_GLCD_WIDTH, LOGO16_GLCD_HEIGHT);*/
 }
 
 
 void loop() {
+  uint8_t len = readPacket(&ble, BLE_READPACKET_TIMEOUT);
+  if (len == 0) return;
+
+  // Buttons
+  if (packetbuffer[1] == 'B') {
+    uint8_t buttnum = packetbuffer[2] - '0';
+    boolean pressed = packetbuffer[3] - '0';
+    Serial.print ("Button "); Serial.print(buttnum);
+    if (pressed) {
+      if (buttnum == 4){
+        //display1.clearDisplay();
+        display1.println("Button 4 clicked!");
+        display1.display();
+        Serial.println("aqui");
+      }
+      Serial.println(" pressed");
+    } else {
+      Serial.println(" released");
+    }
+  }
+}
+void initBluetoothModule() {
+  Serial.println(F("Adafruit Bluefruit App Controller Example"));
+  Serial.println(F("-----------------------------------------"));
+
+  /* Initialise the module */
+  Serial.print(F("Initialising the Bluefruit LE module: "));
+
+  if ( !ble.begin(VERBOSE_MODE) )
+  {
+    error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
+  }
+  Serial.println( F("OK!") );
+
+  if ( FACTORYRESET_ENABLE )
+  {
+    /* Perform a factory reset to make sure everything is in a known state */
+    Serial.println(F("Performing a factory reset: "));
+    if ( ! ble.factoryReset() ){
+      error(F("Couldn't factory reset"));
+    }
+  }
+
+
+  /* Disable command echo from Bluefruit */
+  ble.echo(false);
+
+  Serial.println("Requesting Bluefruit info:");
+  /* Print Bluefruit information */
+  ble.info();
+
+  Serial.println(F("Please use Adafruit Bluefruit LE app to connect in Controller mode"));
+  Serial.println(F("Then activate/use the sensors, color picker, game controller, etc!"));
+  Serial.println();
+
+  ble.verbose(false);  // debug info is a little annoying after this point!
+
+  /* Wait for connection */
+  while (! ble.isConnected()) {
+      delay(500);
+  }
+
+  Serial.println(F("******************************"));
+
+  // LED Activity command is only supported from 0.6.6
+  if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) )
+  {
+    // Change Mode LED Activity
+    Serial.println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
+    ble.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
+  }
+
+  // Set Bluefruit to DATA mode
+  Serial.println( F("Switching to DATA mode!") );
+  ble.setMode(BLUEFRUIT_MODE_DATA);
+
+  Serial.println(F("******************************"));
+}
+
+void drawInitialTerrain(){
+ 
+  
+  
+  //display1.println("outro teste");
+   //display1.clearDisplay();
+   //display2.clearDisplay();
+   display1.println("Loading map...");
+   display1.display();
+  for (int i=0;i<WIDTH;i++){
+    for (int j=HEIGHT-(HEIGHT/4);j<HEIGHT;j++){
+      display1.drawPixel(i, j, BLACK);
+      //display2.drawPixel(i, j, BLACK);
+      //display1.display();
+      Serial.print("I = ");
+      Serial.print(i);
+      Serial.print(" J = ");
+      Serial.println(j);
+      //if (game_map[j][i] == TERRAIN_ICON)
+       // display1.drawPixel(i, j, BLACK);
+    }
+  }
+  display1.display();
+  //display2.display();
+  
   
 }
 
