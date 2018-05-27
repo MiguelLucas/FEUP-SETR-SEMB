@@ -26,14 +26,13 @@
 #include "game.h"
 
 // Software SPI (slower updates, more flexible pin options):
-//first - Serial clock out (SCLK) - 7
-//second - Serial data out (DIN) - 6
-//third - Data/Command select (D/C) - 5
-//fourth - LCD chip select (CS) - 3
-//fifth - LCD reset (RST) - 4
-//Adafruit_PCD8544 display1 = Adafruit_PCD8544(3, 0, 5, 2, 6);
-//Adafruit_PCD8544 display1 = Adafruit_PCD8544(9, 10, 11, 13, 12);
-Adafruit_PCD8544 display1 = Adafruit_PCD8544(3,2,1);
+//first - Serial clock out (SCLK)
+//second - Serial data out (DIN)
+//third - Data/Command select (D/C) 
+//fourth - LCD chip select (CS)
+//fifth - LCD reset (RST) 
+Adafruit_PCD8544 display1 = Adafruit_PCD8544(3,2,6,10,5);
+Adafruit_PCD8544 display2 = Adafruit_PCD8544(3,2,6,13,9);
 //Game game;
 
 // Hardware SPI (faster, but must use certain hardware pins):
@@ -47,8 +46,8 @@ Adafruit_PCD8544 display1 = Adafruit_PCD8544(3,2,1);
 // and written to during SPI transfer.  Be careful sharing these pins!
 
 #define FACTORYRESET_ENABLE         0
-    #define MINIMUM_FIRMWARE_VERSION    "0.6.6"
-    #define MODE_LED_BEHAVIOUR          "MODE"
+#define MINIMUM_FIRMWARE_VERSION    "0.6.6"
+#define MODE_LED_BEHAVIOUR          "MODE"
 
 //CS = 8
 //IRQ = 7
@@ -96,6 +95,16 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
   B01110000, B01110000,
   B00000000, B00110000 };
 
+int menuPos = 0;
+int menuScreen = 0;
+int markerPos = 0;
+int menuStartAt = 0;
+
+String menu[2] = {
+  "Start game",
+  "Exit",
+};
+
 void setup()   {
   Serial.begin(9600);
   //game_map[1][1] = 'R';
@@ -108,34 +117,40 @@ void setup()   {
 
 
   display1.begin();
-  //display2.begin();
+  display2.begin();
   display1.setContrast(50);
-  //display2.setContrast(50);
+  display2.setContrast(50);
 
   display1.clearDisplay();
-  //display2.clearDisplay();
+  display2.clearDisplay();
   
   Serial.println("Iniciar");
-  display1.println("Loading...");
+  display1.println("Waiting for connection");
   
 
   display1.display();
-  //display2.display();
+  display2.display();
 
   delay(2000);
   //display1.clearDisplay();
   //display1.println("Waiting for bluetooth connection...");
   //display1.display();
   
-  //initBluetoothModule();
+  initBluetoothModule();
   
   delay(2000);
-  Serial.println("Bluetooth connected");
-  display1.begin();
+  Serial.println("Bluetooth connected!");
+  /*
   display1.clearDisplay();
-  display1.println("Bluetooth connected!");
+  display1.println("Bluetooth connected to display 1");
   display1.display();
-  delay(2000);
+  
+  display2.clearDisplay();
+  display2.println("Bluetooth connected to display 2");
+  display2.display();
+  
+  delay(2000);*/
+  showMenu();
   // you can change the contrast around to adapt the display
   // for the best viewing!
   
@@ -300,23 +315,45 @@ void loop() {
   uint8_t len = readPacket(&ble, BLE_READPACKET_TIMEOUT);
   if (len == 0) return;
 
+  Serial.println("Loop initialized");
+
   // Buttons
   if (packetbuffer[1] == 'B') {
+    Serial.println("In Button");
+    
     uint8_t buttnum = packetbuffer[2] - '0';
     boolean pressed = packetbuffer[3] - '0';
-    Serial.print ("Button "); Serial.print(buttnum);
+    Serial.println("Button "); Serial.println(buttnum);
     if (pressed) {
-      if (buttnum == 4){
-        //display1.clearDisplay();
-        display1.println("Button 4 clicked!");
+      if (buttnum == 6 && menuPos == 0){
+          menuPos++;
+          showMenu();
+      }
+
+      if(buttnum == 5 && menuPos == 1) {
+          menuPos--;
+          showMenu();
+      }
+
+      if(buttnum == 1 && menuPos == 0) {
+        gameStart();
+      }
+
+      if(buttnum == 1 && menuPos == 1) {
+        display1.clearDisplay();
+        display1.println("Exiting the   game...");
         display1.display();
-        Serial.println("aqui");
+        
+        display2.clearDisplay();
+        display2.println("See you soon!");
+        display2.display();
       }
       Serial.println(" pressed");
     } else {
       Serial.println(" released");
     }
   }
+
 }
 void initBluetoothModule() {
   Serial.println(F("Adafruit Bluefruit App Controller Example"));
@@ -376,20 +413,53 @@ void initBluetoothModule() {
   Serial.println(F("******************************"));
 }
 
+
+void showMenu() {  
+  for (int i = menuStartAt; i < (menuStartAt + 4); i++) {
+    int markerY = (i - menuStartAt) * 11;
+    
+    if (i == menuPos) {
+      display1.setTextColor(WHITE, BLACK);
+      display1.fillRect(0, markerY, display1.width(), 11, BLACK);
+    } else {
+      display1.setTextColor(BLACK, WHITE);
+      display1.fillRect(0, markerY, display1.width(), 11, WHITE);
+    }
+
+    if (i >= 2) {
+      continue;
+    }
+
+    display1.setCursor(2, markerY + 2);
+    display1.print(menu[i]);
+  }
+
+  display1.display();
+}
+
+void gameStart() {
+  display1.clearDisplay();
+  display2.clearDisplay();
+  
+  display1.println("Loading map...");
+  display2.println("Loading map...");
+
+  display1.display();
+  display2.display();
+  
+  drawInitialTerrain();
+}
+
 void drawInitialTerrain(){
- 
   
+  display1.clearDisplay();
+  display2.clearDisplay();
   
-  //display1.println("outro teste");
-   //display1.clearDisplay();
-   //display2.clearDisplay();
-   display1.println("Loading map...");
-   display1.display();
   for (int i=0;i<WIDTH;i++){
     for (int j=HEIGHT-(HEIGHT/4);j<HEIGHT;j++){
       display1.drawPixel(i, j, BLACK);
-      //display2.drawPixel(i, j, BLACK);
-      //display1.display();
+      display2.drawPixel(i, j, BLACK);
+
       Serial.print("I = ");
       Serial.print(i);
       Serial.print(" J = ");
@@ -398,8 +468,9 @@ void drawInitialTerrain(){
        // display1.drawPixel(i, j, BLACK);
     }
   }
+  
   display1.display();
-  //display2.display();
+  display2.display();
   
   
 }
