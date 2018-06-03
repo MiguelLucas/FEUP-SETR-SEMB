@@ -4,20 +4,24 @@
 #include <Arduino.h> //needed for Serial.println
 #include <string.h>
 
-#define WIDTH 84
-#define HEIGHT 48
+#define DISPLAY_WIDTH 84
+#define DISPLAY_HEIGHT 48
 
-const char TERRAIN_ICON = 'T';
-
-char game_map[(WIDTH*2)/4][HEIGHT/4];
-void init_game_map(){
-  
-}
-
-
+struct Block {
+  byte xIni;
+  byte yIni;
+  byte width;
+  byte height;
+};
+/**
+ * States: 0 - menu; 1 - game; 2- aiming
+ * Turn: 1 - Player 1; 2 - Player 2
+ */
 struct Game {
-  char game_map[WIDTH*2][HEIGHT*2];
-  String player;
+  byte state;
+  byte turn;
+  Block blocks1[2];
+  Block blocks2[3];
 };
 
 #endif
