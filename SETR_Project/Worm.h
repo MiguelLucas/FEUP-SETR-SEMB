@@ -10,7 +10,6 @@ struct Worm {
   byte id;
   byte posX;
   byte posY;
-  byte maxHp;
   byte currentHp;
 
   //jumping settings

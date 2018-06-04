@@ -20,8 +20,8 @@ struct Block {
 struct Game {
   byte state;
   byte turn;
-  Block blocks1[2];
-  Block blocks2[3];
+  Block blocks1[7];
+  Block blocks2[7];
 };
 
 #endif

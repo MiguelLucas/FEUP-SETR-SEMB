@@ -296,6 +296,7 @@ void detectJump(int button){
   //jump forward
   if (button == BUTTON_UP){
      if (game.turn == 1) {
+      if (worm1.posX + WORM_WIDTH + (worm1.jumpHeight*2) < DISPLAY_WIDTH){
         for (int i=1;i<worm1.jumpHeight;i++){
            delay(worm1.jumpDelay);
            worm1.posX++;
@@ -309,7 +310,10 @@ void detectJump(int button){
            worm1.posY++;
            drawDisplay1();
         }
+      }
+      worm1.onGround = false;
      } else {
+      if (worm2.posX - (worm2.jumpHeight*2) >= 0){
        for (int i=1;i<worm2.jumpHeight;i++){
            delay(worm2.jumpDelay);
            worm2.posX--;
@@ -323,6 +327,8 @@ void detectJump(int button){
            worm2.posY++;
            drawDisplay2();
         }
+      }
+      worm2.onGround = false;
      }
      detectGround();
   }
@@ -330,6 +336,7 @@ void detectJump(int button){
   //jump backward
   if (button == BUTTON_DOWN){
       if (game.turn == 1) {
+        if (worm1.posX - (worm1.jumpHeight*2) >= 0){
          for (int i=1;i<worm1.jumpHeight;i++){
            delay(worm1.jumpDelay);
            worm1.posX--;
@@ -343,20 +350,25 @@ void detectJump(int button){
            worm1.posY++;
            drawDisplay1();
          }
+        }
+        worm1.onGround = false;
       } else {
-        for (int i=1;i<worm2.jumpHeight;i++){
-           delay(worm2.jumpDelay);
-           worm2.posX++;
-           worm2.posY--;
-           drawDisplay2();
-         }
-  
-         for (int i=1;i<worm2.jumpHeight;i++){
-           delay(worm2.jumpDelay);
-           worm2.posX++;
-           worm2.posY++;
-           drawDisplay2();
-         }
+         if (worm2.posX + WORM_WIDTH + (worm2.jumpHeight*2) < DISPLAY_WIDTH){
+          for (int i=1;i<worm2.jumpHeight;i++){
+             delay(worm2.jumpDelay);
+             worm2.posX++;
+             worm2.posY--;
+             drawDisplay2();
+           }
+    
+           for (int i=1;i<worm2.jumpHeight;i++){
+             delay(worm2.jumpDelay);
+             worm2.posX++;
+             worm2.posY++;
+             drawDisplay2();
+           }
+        }
+        worm2.onGround = false;
       }
       detectGround();
   }
@@ -420,36 +432,28 @@ void shoot(){
     shot.posX += DISPLAY_WIDTH;
   }
   shot.velocity = INITIAL_VELOCITY;
-  shot.resistance = HORIZONTAL_RESISTANCE;
+  shot.v_resistance = INITIAL_VERTICAL_RESISTANCE;
+  shot.h_resistance = INITIAL_HORIZONTAL_RESISTANCE;
   shot.angle = aim.step*(PI/20);
   game.state = 3;
-
-  Serial.println("Shooting");
 
   boolean hit = false;
 
   while (!hit){
-    delay(75);
-     double xSpeed = (INITIAL_VELOCITY/2 * cos(shot.angle)) + shot.resistance;
-     double ySpeed = (shot.velocity * sin(shot.angle)) + VERTICAL_RESISTANCE;
+    delay(100);
+     double xSpeed = (INITIAL_VELOCITY * cos(shot.angle)) - shot.v_resistance;
+     double ySpeed = (shot.velocity * sin(shot.angle)) - shot.h_resistance;
 
-     if (xSpeed < 0) {
-       xSpeed = 0;
+     if (xSpeed < 1) {
+       xSpeed = 1;
      }
 
      if (game.turn == 2){
        xSpeed = xSpeed * (-1);
      }
 
-     shot.posX += xSpeed-1;
+     shot.posX += xSpeed;
      shot.posY -= ySpeed;
-
-     Serial.print("Angle = ");Serial.println(shot.angle);
-     Serial.print("velocity = ");Serial.println(shot.velocity);
-     Serial.print("X Speed = ");Serial.println(xSpeed);
-     Serial.print("Y Speed = ");Serial.println(ySpeed);
-     Serial.print("Shot X = ");Serial.println(shot.posX);
-     Serial.print("Shot Y = ");Serial.println(shot.posY);
 
      hit = detectShotCollision();
 
@@ -466,12 +470,14 @@ void shoot(){
       drawDisplay1();
      }
 
-     
-
      shot.velocity = ySpeed;
-     shot.resistance -= 0.1;
+     shot.v_resistance += (shot.v_resistance/4);
+     shot.h_resistance += (shot.h_resistance/4);
      if (shot.posX < DISPLAY_WIDTH){
        drawDisplay1();
+     } else if (shot.posX < DISPLAY_WIDTH + INITIAL_VELOCITY) {
+       drawDisplay1();
+       drawDisplay2();
      } else {
        drawDisplay2();
      }
@@ -480,14 +486,57 @@ void shoot(){
 
 boolean detectShotCollision(){
   if (shot.posX < DISPLAY_WIDTH){
+    byte map1_length = sizeof(game.blocks1) / sizeof(Block);
+
+    Serial.println("display 1");
+    for (byte i=0;i<map1_length;i++){
+      if (game.blocks1[i].xIni - 2 < shot.posX && game.blocks1[i].xIni + game.blocks1[i].width + 2 > shot.posX){
+        if (game.blocks1[i].yIni - 5 <= shot.posY && game.blocks1[i].yIni + game.blocks1[i].height + 5 >= shot.posY){
+          game.blocks1[i].xIni = 0;
+          game.blocks1[i].yIni = 0;
+          game.blocks1[i].width = 0;
+          game.blocks1[i].height = 0;
+
+          game.state = 1;
+          if (game.turn == 1){
+            game.turn = 2;
+          } else {
+            game.turn = 1;
+          }
+          aim.active1 = false;
+          aim.active2 = false;
+          //drawDisplay2();
+          worm1.onGround = false;
+          return true;
+        }
+      }
+    }
+
+    if (worm1.posX - 2 < shot.posX && worm1.posX + WORM_WIDTH + 2 > shot.posX){
+        if (worm1.posY - 2 <= shot.posY && worm1.posY + WORM_HEIGHT + 2 >= shot.posY){
+           worm1.currentHp--;
+           
+
+           game.state = 1;
+          if (game.turn == 1){
+            game.turn = 2;
+          } else {
+            game.turn = 1;
+          }
+          aim.active1 = false;
+          aim.active2 = false;
+
+          return true;
+        }
+    }
     return false;
   } else {
     byte map2_length = sizeof(game.blocks2) / sizeof(Block);
 
+    byte shot_posX_display2 = shot.posX - DISPLAY_WIDTH;
     for (byte i=0;i<map2_length;i++){
-      if (game.blocks2[i].xIni < shot.posX-2 && game.blocks2[i].xIni + game.blocks2[i].width > shot.posX+2){
-        if (game.blocks2[i].yIni >= shot.posY-2 && game.blocks2[i].yIni + game.blocks2[i].height <= shot.posY+2){
-           Serial.println("BLOCK 2 HIT!!!");
+      if (game.blocks2[i].xIni - 2 < shot_posX_display2 && game.blocks2[i].xIni + game.blocks2[i].width + 2 > shot_posX_display2){
+        if (game.blocks2[i].yIni - 5 <= shot.posY && game.blocks2[i].yIni + game.blocks2[i].height + 5 >= shot.posY){
           game.blocks2[i].xIni = 0;
           game.blocks2[i].yIni = 0;
           game.blocks2[i].width = 0;
@@ -501,20 +550,26 @@ boolean detectShotCollision(){
           }
           aim.active1 = false;
           aim.active2 = false;
-          //drawDisplay2();
+          worm2.onGround = false;
           return true;
         }
       }
     }
+    
+    if (worm2.posX - 2 < shot_posX_display2 && worm2.posX + WORM_WIDTH + 2 > shot_posX_display2){
+        if (worm2.posY-2 <= shot.posY && worm2.posY + WORM_HEIGHT +2 >= shot.posY){
+           worm2.currentHp--;
 
-    if (worm1.posX < shot.posX-2 && worm1.posX + WORM_WIDTH > shot.posX+2){
-        if (worm1.posY >= shot.posY-2 && worm1.posY + WORM_HEIGHT <= shot.posY+2){
-           Serial.println("WORM 1 WAS HIT!!!");
-           worm1.currentHp--;
-           if (worm1.currentHp <= 0){
-             gameOver(worm2);
-             return true;
-           }
+           game.state = 1;
+          if (game.turn == 1){
+            game.turn = 2;
+          } else {
+            game.turn = 1;
+          }
+          aim.active1 = false;
+          aim.active2 = false;
+
+          return true;
         }
     }
 
@@ -548,6 +603,12 @@ void drawDisplay1(){
       display1.fillCircle(shot.posX, shot.posY, 2, BLACK);
     }
   }
+
+  display1.println(worm1.currentHp);
+
+  if (worm1.currentHp <= 0){
+     gameOver(worm2);
+   }
   
   display1.display();
   drawDisplay2();
@@ -570,29 +631,13 @@ void drawDisplay2(){
       display2.fillCircle(shot.posX - DISPLAY_WIDTH, shot.posY, 2, BLACK);
     }
   }
+
+  display2.println(worm2.currentHp);
+
+  if (worm2.currentHp <= 0){
+     gameOver(worm1);
+   }
   
   display2.display();
-}
-
-void debugGame(){
-  Serial.println("-------GAME--------");
-  Serial.print("Turn = ");Serial.println(game.turn);
-  Serial.print("State = ");Serial.println(game.state);
-  Serial.print("Blocks1 has size of ");Serial.print(sizeof(game.blocks1));Serial.print(" and lenght of ");Serial.println(sizeof(game.blocks1) / sizeof(Block));
-  Serial.print("Blocks2 has size of ");Serial.print(sizeof(game.blocks2));Serial.print(" and lenght of ");Serial.println(sizeof(game.blocks2) / sizeof(Block));
-  Serial.println("-------------------");
-}
-
-void debugPins(){
-  digitalWrite(2,HIGH);
-  digitalWrite(6,HIGH);
-  digitalWrite(13,HIGH);
-  Serial.print("Pin 2 = ");Serial.println(digitalRead(2));
-  Serial.print("Pin 3 = ");Serial.println(digitalRead(3));
-  Serial.print("Pin 5 = ");Serial.println(digitalRead(5));
-  Serial.print("Pin 6 = ");Serial.println(digitalRead(6));
-  Serial.print("Pin 10 = ");Serial.println(digitalRead(10));
-  Serial.print("Pin 12 = ");Serial.println(digitalRead(12));
-  Serial.print("Pin 13 = ");Serial.println(digitalRead(13));
 }
 
