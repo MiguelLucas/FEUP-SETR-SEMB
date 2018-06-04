@@ -1,7 +1,7 @@
 #include "Worm.h"
 
 Worm worm1 = {1, 10, 10, 5, 5, 50, 8, 1, false};
-Worm worm2 = {2, 50, 35, 5, 5, 50, 8, 1, false};
+Worm worm2 = {2, 30, 25, 5, 5, 50, 8, 1, false};
 
 unsigned char* getBitmap(Worm worm){
   if (worm.id == 1) {

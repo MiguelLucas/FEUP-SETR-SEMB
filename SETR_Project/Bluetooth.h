@@ -16,9 +16,6 @@
 #define MINIMUM_FIRMWARE_VERSION    "0.6.6"
 #define MODE_LED_BEHAVIOUR          "MODE"
 
-
-
-
 // A small helper
 void error(const __FlashStringHelper*err);
 void initBluetoothModule();

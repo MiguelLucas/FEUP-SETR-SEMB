@@ -12,6 +12,8 @@
 #define BUTTON_LEFT 7
 #define BUTTON_RIGHT 8
 
+#define PI 3.14
+
 static const unsigned char PROGMEM worm_bmp_left1[] = {
   B01100000,B00000000,
   B11100000,B00000000,
