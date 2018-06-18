@@ -17,7 +17,7 @@ This project is a (supposedly) Worms game in a dual display, using an Arduino UN
 * Run the project into your Arduino
 * Wait for the "Waiting for bluetooth connection" message
 * Install the app in your phone and turn on Bluetooth
-* Open the app and search for Bluefruit LE
+* Open the app and search for Adafruit Bluefruit LE
 * Select "Controller"
 * Select "Control Pad"
 * Play (up and down arrows to jump, left and right arrows to move, button 1 to aim/shoot, button 2 to cancel
@@ -28,6 +28,10 @@ This project is a (supposedly) Worms game in a dual display, using an Arduino UN
 * [Report](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Report)
 * [BitmapEncoder](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/BitmapEncoder) - This program is used to convert bitmaps into a bit array, if you want to change the images in the game
 * [Images](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Images) - Original image used. Yes it looks like what you're thinking.
+
+### Demo
+
+* Magnificent [demo](https://www.youtube.com/watch?v=lLk39jCllTs) in ULTRA 4K (or not)
 
 ### Disclaimer
 
