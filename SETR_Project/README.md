@@ -1,2 +1,0 @@
-# SETR
-SETR Project - FEUP
