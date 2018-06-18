@@ -13,7 +13,7 @@ This project is a (supposedly) Worms game in a dual display, using an Arduino UN
 
 ### Procedures
 
-* Follow the wiring of the tutorial, or of the [Report](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/SETR_Project/Report) in this repository
+* Follow the wiring of the tutorial, or of the [Report](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Report) in this repository
 * Run the project into your Arduino
 * Wait for the "Waiting for bluetooth connection" message
 * Install the app in your phone and turn on Bluetooth
@@ -24,10 +24,10 @@ This project is a (supposedly) Worms game in a dual display, using an Arduino UN
 
 ### Contents
 
-* [Code](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/SETR_Project/Project)
-* [Report](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/SETR_Project/Report)
-* [BitmapEncoder](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/SETR_Project/BitmapEncoder) - This program is used to convert bitmaps into a bit array, if you want to change the images in the game
-* [Images](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/SETR_Project/Images) - Original image used. Yes it looks like what you're thinking.
+* [Code](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Project)
+* [Report](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Report)
+* [BitmapEncoder](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/BitmapEncoder) - This program is used to convert bitmaps into a bit array, if you want to change the images in the game
+* [Images](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Images) - Original image used. Yes it looks like what you're thinking.
 
 ### Disclaimer
 
