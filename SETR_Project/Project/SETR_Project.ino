@@ -82,7 +82,11 @@ void setup()   {
 
 void loop() {
   if (game.state == 1) {
+    unsigned long StartTime = millis();
       detectGround();
+      unsigned long endTime = millis();
+  unsigned long elapsedTime = endTime - StartTime;
+  Serial.print("TIME TO DETECT GROUND: ");Serial.println(elapsedTime);
   }
   
   uint8_t len = readPacket(&ble, BLE_READPACKET_TIMEOUT);
@@ -293,6 +297,7 @@ void drawWorm(Worm *wormToDraw){
 }
 
 void detectJump(int button){
+   unsigned long StartTime = millis();
   //jump forward
   if (button == BUTTON_UP){
      if (game.turn == 1) {
@@ -330,6 +335,9 @@ void detectJump(int button){
       }
       worm2.onGround = false;
      }
+      unsigned long endTime = millis();
+  unsigned long elapsedTime = endTime - StartTime;
+  Serial.print("TIME TO JUMP: ");Serial.println(elapsedTime);
      detectGround();
   }
 
@@ -440,12 +448,13 @@ void shoot(){
   boolean hit = false;
 
   while (!hit){
+    unsigned long StartTime = millis();
     delay(100);
      double xSpeed = (INITIAL_VELOCITY * cos(shot.angle)) - shot.v_resistance;
      double ySpeed = (shot.velocity * sin(shot.angle)) - shot.h_resistance;
 
-     if (xSpeed < 1) {
-       xSpeed = 1;
+     if (xSpeed < 2) {
+       xSpeed = 2;
      }
 
      if (game.turn == 2){
@@ -475,12 +484,16 @@ void shoot(){
      shot.h_resistance += (shot.h_resistance/4);
      if (shot.posX < DISPLAY_WIDTH){
        drawDisplay1();
-     } else if (shot.posX < DISPLAY_WIDTH + INITIAL_VELOCITY) {
+     } else if (shot.posX <= DISPLAY_WIDTH + INITIAL_VELOCITY) {
        drawDisplay1();
        drawDisplay2();
      } else {
        drawDisplay2();
      }
+
+     unsigned long endTime = millis();
+    unsigned long elapsedTime = endTime - StartTime;
+    Serial.print("TIME TO SHOOT: ");Serial.println(elapsedTime);
   }
 }
 
@@ -586,7 +599,7 @@ void gameOver(Worm worm){
 }
 
 void drawDisplay1(){
- 
+ unsigned long StartTime = millis();
   byte map1_length = sizeof(game.blocks1) / sizeof(Block);
   display1.clearDisplay();
   for (byte i=0;i<map1_length;i++){
@@ -611,10 +624,14 @@ void drawDisplay1(){
    }
   
   display1.display();
+  unsigned long endTime = millis();
+  unsigned long elapsedTime = endTime - StartTime;
+  Serial.print("TIME TO DRAW DISPLAY 1: ");Serial.println(elapsedTime);
   drawDisplay2();
 }
 
 void drawDisplay2(){
+  unsigned long StartTime = millis();
   byte map2_length = sizeof(game.blocks2) / sizeof(Block);
   display2.clearDisplay();
   for (byte i=0;i<map2_length;i++){
@@ -639,5 +656,8 @@ void drawDisplay2(){
    }
   
   display2.display();
+   unsigned long endTime = millis();
+  unsigned long elapsedTime = endTime - StartTime;
+  Serial.print("TIME TO DRAW DISPLAY 2: ");Serial.println(elapsedTime);
 }
 
