@@ -10,4 +10,9 @@ A real time system is able to keep the pace of a process and influence it in a d
   * Multi-tasking
   * Acess to shared resources
   * Hardware interrupts
-* 
+
+Requirements of Real time Systems can be 
+* Functional (acquiring environment data, direct digital control and human machine interface)
+* Temporal
+
+Temporal requirements sets constraints 
