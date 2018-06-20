@@ -4,7 +4,7 @@ Sistemas Embutidos e de Tempo Real / Sistemas Embarcados - 2017/18
 ### Contents
 
  * [Project](Project)
-    * [Code](Project/Code)
+    * [Code](Project/Project)
     * [Report](Project/Report)
  * [Exam Preparation](Exam%20Preparation)
 
