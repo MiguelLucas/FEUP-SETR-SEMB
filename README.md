@@ -3,8 +3,9 @@ Sistemas Embutidos e de Tempo Real / Sistemas Embarcados - 2017/18
 
 ### Contents
 
- * [Project](SETR_Project)
-    * [Report](SETR_Project/Report)
+ * [Project](Project)
+    * [Code](Project/Code)
+    * [Report](Project/Report)
  * [Exam Preparation](Exam%20Preparation)
 
 ### About
