@@ -11,8 +11,17 @@ A real time system is able to keep the pace of a process and influence it in a d
   * Acess to shared resources
   * Hardware interrupts
 
-Requirements of Real time Systems can be 
+Requirements of Real time Systems are
 * Functional (acquiring environment data, direct digital control and human machine interface)
 * Temporal
+* Dependability
 
-Temporal requirements sets constraints 
+Temporal requirements sets constraints that must be met in all instances
+
+Real Time constraints can be:
+
+* Soft - Time contraint according to which the associated value **keeps some utility** to the application even after a deadline D, despite a possible degradation of the quality of service
+
+* Firm - Time constraint according to which the associated value **loses any utility** to the application after a deadline D
+
+* Hard - Time constraint that, when not met, may generate a **catastrophic failure**
