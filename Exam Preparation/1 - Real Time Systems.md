@@ -18,7 +18,7 @@ Requirements of Real time Systems are
 
 Temporal requirements sets constraints that must be met in all instances
 
-Real Time constraints can be:
+Real Time **constraints** can be:
 
 <img align="right" src="Images/graf1.PNG" width="150">
 
@@ -32,3 +32,14 @@ Real Time constraints can be:
 <img align="right" src="Images/graf3.PNG" width="150">
 
 * Hard - Time constraint that, when not met, may generate a **catastrophic failure**
+
+Real Time **systems** can be:
+
+* Soft Real Time - There are **firm** or **soft** time constraints only
+* Hard Real Time - There is at least one **hard** time constraint. These are safety-critical systems.
+
+Real time systems are used in critical applications, thus having a specific requirement: high reliability. These aplications can be categorized has having **critical safety**: 
+
+* They have **stable interfaces** between the critical and non-critical subsystems in order to prevent error propagation.
+* **Well defined worst-case scenarios**, in which the system must possess the **adequate resources** to withstand a worst-case operational scenario without the need for probabilistic arguments and should provide service guarantees even in such cases
+* **Architecture** composed by **autonomous subsystems**, whose properties can be verified independently from the other subsystems
