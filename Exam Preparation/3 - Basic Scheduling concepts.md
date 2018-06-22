@@ -30,7 +30,8 @@ Single job tasks, with offsets, non-preemptive
 O(n!)
 
 Segundo o mesmo conjunto de tarefas do exemplo anterior
-<img src="Images/bb.PNG" width="550">
+
+<img src="Images/bb.PNG" width="250">
 
 Algoritmo verifica todas as possibilidades em forma de árvore, e seleciona a com menor L.
 
