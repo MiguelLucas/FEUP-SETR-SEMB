@@ -6,7 +6,7 @@ This project is a (supposedly) Worms game in a dual display, using an Arduino UN
 
 * Arduino UNO
 * Bluefruit LE Shield module
-* A fuckton of cables
+* A lot of cables
 * Android smartphone with [Adafruit Bluefruit LE app](https://play.google.com/store/apps/details?id=com.adafruit.bluefruit.le.connect) and bluetooth
 * 2 Nokia 5510/3110 displays ([tutorial](https://learn.adafruit.com/nokia-5110-3310-monochrome-lcd/overview))
 * Patience
@@ -27,7 +27,7 @@ This project is a (supposedly) Worms game in a dual display, using an Arduino UN
 * [Code](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Project)
 * [Report](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Report)
 * [BitmapEncoder](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/BitmapEncoder) - This program is used to convert bitmaps into a bit array, if you want to change the images in the game
-* [Images](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Images) - Original image used. Yes it looks like what you're thinking.
+* [Images](https://github.com/MiguelLucas/FEUP-SETR-SEMB/tree/master/Project/Images) - Original image used. 
 
 ### Demo
 
@@ -35,4 +35,4 @@ This project is a (supposedly) Worms game in a dual display, using an Arduino UN
 
 ### Disclaimer
 
-DO NOT FOLLOW the software architecture of this project, unless you want to have a bad grade. This uses a hybrid (cyclic + interrupts) approach, and you should use a more sophisticated architecture for your project, even if you didn't know you had (i didn't)
+I advise you to NOT FOLLOW the software architecture of this project. This uses a hybrid (cyclic + interrupts) approach, and you should use a more sophisticated architecture for your project, even if you didn't know you had (i didn't)
